@@ -8,11 +8,15 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.interfaces.Potentiometer;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.AnalogPotentiometer;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 
+import com.ctre.phoenix.motorcontrol.can.*;
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -22,6 +26,9 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
  * directory.
  */
 public class Robot extends IterativeRobot {
+	
+	// SPARK MOTOR DRIVE
+	
 	Spark m_frontLeft = new Spark(0);
 	Spark m_rearLeft = new Spark(1);
 	SpeedControllerGroup m_left = new SpeedControllerGroup(m_frontLeft, m_rearLeft);
@@ -32,19 +39,32 @@ public class Robot extends IterativeRobot {
 
 	DifferentialDrive m_drive = new DifferentialDrive(m_left, m_right);
 	
+	// JOYSTICK
 	Joystick leftJoy = new Joystick(1);
 	
-	Timer timer = new Timer();
+	// DART ACTUATOR
+	TalonSRX newTalon = new TalonSRX(15);
 	
+	// OBJECTS NOT IN USE
+	/** Timer timer = new Timer();
+	 
 	Compressor c = new Compressor(0);
 	
-	Potentiometer pot = new AnalogPotentiometer(0, 3600, 30);
-	/**10 revolutions of 360 degrees to extend to maximum length: 6 inches
-	 * so 10 * 360 = 3600 degrees maximum rotation
-	 */
-	double potDegrees = pot.get();
 	DoubleSolenoid mySol1 = new DoubleSolenoid(1, 2);
 	DoubleSolenoid mySol2 = new DoubleSolenoid(0, 3);
+	 
+	 */
+
+	// IN PROGRESS
+	/**
+	Potentiometer pot = new AnalogPotentiometer(0, 3600, 30);
+	
+	10 revolutions of 360 degrees to extend to maximum length: 6 inches
+	 * so 10 * 360 = 3600 degrees maximum rotation
+	 double potDegrees = pot.get();
+	 */
+	
+	
 	
 	/**
 	 * This function is run when the robot is first started up and should be
@@ -92,19 +112,29 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void teleopPeriodic() {
 		
-		/** double value = leftJoy.getRawAxis(1);
+		double value = leftJoy.getRawAxis(1);
+		
+		// VARIABLES NOT IN USE
+		/**
 		double value1 = leftJoy.getRawAxis(4);
-		m_drive.arcadeDrive(value, value1);
-		m_frontLeft.set(leftJoy.getRawAxis(1));
+		
+		
+		
 		*/
 		
+		
+		newTalon.set(ControlMode.PercentOutput, value);
+		
+		// DRIVING SPARK MOTORS
+		
+		/**m_drive.arcadeDrive(value, value1);
+		m_frontLeft.set(leftJoy.getRawAxis(1));
 		
 		if (leftJoy.getRawButtonPressed(4)) {
 		
 			mySol1.set(DoubleSolenoid.Value.kForward);
 			mySol2.set(DoubleSolenoid.Value.kForward);
 			
-		
 		}
 		if (leftJoy.getRawButtonPressed(3)) {
 			
@@ -117,16 +147,24 @@ public class Robot extends IterativeRobot {
 			System.out.println(potDegrees);
 			
 		}
+		
+		*/
+	
 	}
-}
+
 
 	/**
 	 * This function is called periodically during test mode
+	 * 
+	 * 
 	 
 	@Override
 	public void testPeriodic() {
-		LiveWindow.run();
+		newTalon.configSelectedFeedbackSensor(com.ctre.phoenix.motorcontrol.FeedbackDevice.Analog, 0, 0);
+		newTalon.setSensorPhase(false);
+		SmartDashboard.putNumber("New Talon", newTalon.getSelectedSensorPosition(0));
+		
+	
 	}
-}
-
 	*/
+}
